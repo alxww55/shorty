@@ -20,7 +20,7 @@ class URLRepository:
         )
         return result.scalar_one_or_none()
 
-    async def get_url(self, shortened_url_data: URLCreate) -> URLModel:
+    async def create_url(self, shortened_url_data: URLCreate) -> URLModel:
         shortened_url = URLModel(**shortened_url_data.model_dump())
         self.session.add(shortened_url)
         await self.session.commit()
