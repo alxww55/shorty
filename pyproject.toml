@@ -1,0 +1,39 @@
+[project]
+name = "shortener"
+version = "0.1.0"
+description = "URL shortener"
+authors = [{ name = "alxww55", email = "alxww55@icloud.com" }]
+license = "MIT"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi (>=0.120.2,<0.121.0)",
+    "uvicorn[standard] (>=0.38.0,<0.39.0)",
+    "sqlalchemy (>=2.0.44,<3.0.0)",
+    "alembic (>=1.17.1,<2.0.0)",
+    "jinja2 (>=3.1.6,<4.0.0)",
+    "psycopg (>=3.2.12,<4.0.0)",
+    "pydantic (>=2.12.3,<3.0.0)",
+    "pydantic-settings (>=2.11.0,<3.0.0)",
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = ["ruff (>=0.14.3,<0.15.0)", "pre-commit (>=4.3.0,<5.0.0)"]
+
+[tool.ruff]
+line-length = 79
+lint.select = [
+    "E",
+    "F",
+    "UP",
+    "B",
+    "SIM",
+    "I",
+]
+fix = true
+exclude = ["__pycache__", ".ruff-cache"]
