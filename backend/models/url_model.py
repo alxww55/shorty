@@ -9,7 +9,7 @@ from sqlalchemy.orm import (
 from .base_model import Base
 
 
-class ShortenedURL(Base):
+class URLModel(Base):
     original_url: Mapped[str] = mapped_column(index=True)
     shortened_url: Mapped[str] = mapped_column(
         unique=True, index=True, nullable=False

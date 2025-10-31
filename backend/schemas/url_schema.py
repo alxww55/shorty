@@ -9,7 +9,7 @@ from pydantic import (
 )
 
 
-class ShortenedURLBase(BaseModel):
+class URLBase(BaseModel):
     original_url: str = Field(
         ...,
         min_length=1,
@@ -34,11 +34,11 @@ class ShortenedURLBase(BaseModel):
         return value
 
 
-class ShortenedURLCreate(ShortenedURLBase):
+class URLCreate(BaseModel):
     pass
 
 
-class ShortenedURLResponse(ShortenedURLBase):
+class URLResponse(BaseModel):
     id: int = Field(
         ..., description="Unique URL id", alias="uniqueShortenedUrlIdentifier"
     )
