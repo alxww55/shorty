@@ -12,17 +12,17 @@ class URLRepository:
     async def get_url_by_id(self, url_id: int) -> URLModel | None:
         return await self.session.get(URLModel, url_id)
 
-    async def get_url_by_shortened_url(
-        self, shortened_url: str
+    async def get_url_by_shortened_code(
+        self, shortened_code: str
     ) -> URLModel | None:
         result: Result = await self.session.execute(
-            select(URLModel).where(URLModel.shortened_url == shortened_url)
+            select(URLModel).where(URLModel.shortened_code == shortened_code)
         )
         return result.scalar_one_or_none()
 
-    async def get_url(self, shortened_url_data: URLCreate) -> URLModel:
-        shortened_url = URLModel(**shortened_url_data.model_dump())
-        self.session.add(shortened_url)
+    async def create_url(self, url_data: URLCreate) -> URLModel:
+        url = URLModel(**url_data.model_dump())
+        self.session.add(url)
         await self.session.commit()
-        await self.session.refresh(shortened_url)
-        return shortened_url
+        await self.session.refresh(url)
+        return url

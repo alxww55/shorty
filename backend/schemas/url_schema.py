@@ -1,10 +1,10 @@
+import re
 from datetime import UTC, datetime
 
 from pydantic import (
     BaseModel,
     ConfigDict,
     Field,
-    ValidationError,
     field_validator,
 )
 
@@ -17,10 +17,18 @@ class URLBase(BaseModel):
         description="Original URL",
         alias="originalUrl",
     )
+    shortened_code: str = Field(
+        ...,
+        min_length=1,
+        max_length=2048,
+        description="Shortened URL code",
+        alias="shortenedUrl",
+    )
     expires_at: datetime | None = Field(
         None,
         description="Shortened URL expires at",
         alias="shortenedUrlExpiresAt",
+        examples=[None],
     )
 
     model_config = ConfigDict(
@@ -30,25 +38,26 @@ class URLBase(BaseModel):
     @field_validator("expires_at")
     def validate_expires_at(cls, value: datetime | None) -> datetime | None:
         if value is not None and value < datetime.now(UTC):
-            raise ValidationError("expires_at cannot be in the past")
+            raise ValueError("Field expires_at cannot be in the past")
+        return value
+
+    @field_validator("shortened_code")
+    def validate_shortened_code(cls, value: str) -> str:
+        pattern = re.compile(r"[!@#$^*()+\[\]{}|\\;\"'<>,]")
+        if re.search(pattern, value):
+            raise ValueError("Allowed symbols are: ., %, &, :, /, -, _, ?")
         return value
 
 
-class URLCreate(BaseModel):
+class URLCreate(URLBase):
     pass
 
 
-class URLResponse(BaseModel):
+class URLResponse(URLBase):
     id: int = Field(
         ..., description="Unique URL id", alias="uniqueShortenedUrlIdentifier"
     )
-    shortened_url: str = Field(
-        ...,
-        min_length=1,
-        max_length=2048,
-        description="Shortened URL",
-        alias="shortenedUrl",
-    )
+
     created_at: datetime = Field(
         ..., description="URL created at", alias="shortenedUrlCreatedAt"
     )

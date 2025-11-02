@@ -11,7 +11,7 @@ from .base_model import Base
 
 class URLModel(Base):
     original_url: Mapped[str] = mapped_column(index=True)
-    shortened_url: Mapped[str] = mapped_column(
+    shortened_code: Mapped[str] = mapped_column(
         unique=True, index=True, nullable=False
     )
     created_at: Mapped[datetime] = mapped_column(
