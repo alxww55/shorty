@@ -1,5 +1,4 @@
 function renderShortenedUrl(data) {
-    const container = document.getElementById('result')
     const urlPrefix = document.getElementById('server_url').textContent
     const shortenedCode = urlPrefix + data.shortened_code
 
