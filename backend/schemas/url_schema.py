@@ -15,19 +15,16 @@ class URLBase(BaseModel):
         min_length=1,
         max_length=2048,
         description="Original URL",
-        alias="originalUrl",
     )
     shortened_code: str = Field(
         ...,
         min_length=1,
         max_length=2048,
         description="Shortened URL code",
-        alias="shortenedUrl",
     )
-    expires_at: datetime | None = Field(
-        None,
+    expires_at: datetime = Field(
+        ...,
         description="Shortened URL expires at",
-        alias="shortenedUrlExpiresAt",
         examples=[None],
     )
 
@@ -54,10 +51,6 @@ class URLCreate(URLBase):
 
 
 class URLResponse(URLBase):
-    id: int = Field(
-        ..., description="Unique URL id", alias="uniqueShortenedUrlIdentifier"
-    )
+    id: int = Field(..., description="Unique URL id")
 
-    created_at: datetime = Field(
-        ..., description="URL created at", alias="shortenedUrlCreatedAt"
-    )
+    created_at: datetime = Field(..., description="URL created at")
