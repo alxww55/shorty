@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Shorty is a minimalist, fast, and secure URL shortener. Simplicity never looked so good" />
+    <meta property="og:title" content="Shorty: Your link. But better." />
+    <meta property="og:description" content="Minimalistic, fast and secure tool to shorten up your URLs" />
+    <link rel="shortcut icon" href="{{ url_for('static', path='images/logo.png') }}" type="image/x-icon" />
+    <link rel="stylesheet" href="{{ url_for('static', path='styles/base.css') }}" />
+    <title>{{ app_name }}</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js" integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz" crossorigin="anonymous"></script>
+  </head>
+
+  <body class="m-0 p-0 bg-[#151515] text-white font-sans">
+    <header class="fixed top-0 left-0 w-full bg-[#121212] opacity-80 z-50">
+      <div class="max-w-[78%] mx-auto flex justify-between items-center py-3">
+        <a href="/" class="flex items-center text-[1.5rem] font-semibold">
+          <img class="w-6 h-6 mr-2" src="{{ url_for('static', path='images/logo.png') }}" alt="Shorty Logo" />
+          Shorty
+        </a>
+        <nav class="flex items-center text-[1.2rem] space-x-4">
+          <a href="https://github.com/alxww55/shorty" target="_blank" class="flex items-center hover:text-gray-400 transition-colors">
+            <span>{{ version }}</span>
+            <img class="w-5 h-5 ml-2" src="{{ url_for('static', path='images/github-mark-white.png') }}" alt="GitHub Logo" />
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="mt-16 mx-auto max-w-[78%]">
+      {% block content %}
+
+      {% endblock %}
+    </main>
+  </body>
+</html>
