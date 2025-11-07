@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, status
+from datetime import UTC, datetime, timedelta
+
+from fastapi import APIRouter, Depends, Form, status
 from fastapi.requests import Request
 from fastapi.responses import RedirectResponse
 
@@ -13,10 +15,18 @@ router = APIRouter(tags=["shorty"])
     "/shorten", response_model=URLResponse, status_code=status.HTTP_201_CREATED
 )
 async def create_shortened_url(
-    url_data: URLCreate,
     request: Request,
+    original_url: str = Form(...),
+    shortened_code: str = Form(...),
+    expires_at: int = Form(...),
     service: URLService = Depends(get_url_service),  # noqa: B008
 ):
+    url_data = URLCreate(
+        original_url=original_url,
+        shortened_code=shortened_code,
+        expires_at=datetime.now(UTC) + timedelta(days=expires_at),
+    )
+
     return await service.create_shortened_url(url_data)
 
 

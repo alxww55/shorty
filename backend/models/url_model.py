@@ -17,6 +17,6 @@ class URLModel(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(UTC)
     )
-    expires_at: Mapped[datetime | None] = mapped_column(
+    expires_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
