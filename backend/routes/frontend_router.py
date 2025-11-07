@@ -14,6 +14,10 @@ templates = Jinja2Templates(directory="./frontend/templates")
 async def get_main_page(request: Request):
     return templates.TemplateResponse(
         request=request,
-        name="base.html",
-        context={"app_name": settings.app_name, "version": settings.version},
+        name="index.html",
+        context={
+            "app_name": settings.app_name,
+            "version": settings.version,
+            "server_url": f"{request.url.scheme}://{request.url.hostname}/",
+        },
     )
