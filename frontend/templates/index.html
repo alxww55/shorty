@@ -7,58 +7,48 @@
     </div>
     <div id="card-body" class="mt-8 flex justify-center px-3 sm:px-6">
       <div class="bg-[#1a1a1a]/80 backdrop-blur-md border border-[#2a2f3d] rounded-2xl shadow-2xl p-6 sm:p-8 w-full max-w-[42rem]">
-        <form class="flex flex-col items-start w-full space-y-6" hx-post="/shorten" hx-target="#result" hx-swap="innerHTML">
-          <div class="w-full">
+        <form class="flex flex-col items-start w-full" hx-post="/shorten" hx-target="#result" hx-swap="innerHTML">
+          <div class="w-full mb-6">
             <label for="original_url" class="block mb-2 text-gray-300 text-[0.9rem] sm:text-[0.95rem]">Your long URL</label>
             <input type="url" id="original_url" name="original_url" placeholder="https://example.com/your-long-url" class="w-full p-3 sm:p-3.5 border-2 border-gray-600 bg-[#111111] text-gray-200 text-[0.95rem] sm:text-[1rem] rounded-xl focus:outline-none focus:border-[#3770ee] transition" required />
           </div>
-          <div class="w-full">
+
+          <div class="w-full mb-6">
             <label for="shortened_code" class="block mb-2 text-gray-300 text-[0.9rem] sm:text-[0.95rem]">Customize your link</label>
             <div class="flex flex-col sm:flex-row sm:items-center w-full">
               <span class="text-gray-400 text-[0.9rem] sm:text-[1rem] select-none sm:mr-2 mb-2 sm:mb-0" id="server_url">{{ server_url }}</span>
               <input type="text" id="shortened_code" name="shortened_code" placeholder="custom-alias" class="flex-1 p-3 sm:p-3.5 border-2 border-gray-600 bg-[#111111] text-gray-200 text-[0.95rem] sm:text-[1rem] rounded-xl focus:outline-none focus:border-[#3770ee] transition" required />
             </div>
           </div>
-          <div class="w-full">
+
+          <div class="w-full mb-6">
             <p class="mb-3 text-gray-300 text-[0.9rem] sm:text-[0.95rem]">Expires automatically after</p>
             <div class="flex flex-col sm:flex-row sm:justify-start sm:gap-8 gap-4">
               <label class="flex items-center gap-2 cursor-pointer">
-                <input type="radio" name="expires_at" id="one_day" class="appearance-none w-5 h-5 sm:w-5 sm:h-5 rounded-full border-2 border-gray-400 checked:bg-blue-500 checked:border-blue-500 checked:shadow-[inset_0_0_0_2px_#111111] transition" checked value="1" />
+                <input type="radio" name="expires_at" id="one_day" class="cursor-pointer appearance-none w-5 h-5 sm:w-5 sm:h-5 rounded-full border-2 border-gray-600 checked:bg-blue-500 checked:border-blue-500 checked:shadow-[inset_0_0_0_2px_#111111] transition" checked value="1" />
                 <span class="text-[0.9rem] sm:text-[1rem]">One Day</span>
               </label>
               <label class="flex items-center gap-2 cursor-pointer">
-                <input type="radio" name="expires_at" id="one_month" class="appearance-none w-5 h-5 sm:w-5 sm:h-5 rounded-full border-2 border-gray-400 checked:bg-blue-500 checked:border-blue-500 checked:shadow-[inset_0_0_0_2px_#111111] transition" value="30" />
+                <input type="radio" name="expires_at" id="one_month" class="cursor-pointer appearance-none w-5 h-5 sm:w-5 sm:h-5 rounded-full border-2 border-gray-600 checked:bg-blue-500 checked:border-blue-500 checked:shadow-[inset_0_0_0_2px_#111111] transition" value="30" />
                 <span class="text-[0.9rem] sm:text-[1rem]">One Month</span>
               </label>
               <label class="flex items-center gap-2 cursor-pointer">
-                <input type="radio" name="expires_at" id="one_year" class="appearance-none w-5 h-5 sm:w-5 sm:h-5 rounded-full border-2 border-gray-400 checked:bg-blue-500 checked:border-blue-500 checked:shadow-[inset_0_0_0_2px_#111111] transition" value="365" />
+                <input type="radio" name="expires_at" id="one_year" class="cursor-pointer appearance-none w-5 h-5 sm:w-5 sm:h-5 rounded-full border-2 border-gray-600 checked:bg-blue-500 checked:border-blue-500 checked:shadow-[inset_0_0_0_2px_#111111] transition" value="365" />
                 <span class="text-[0.9rem] sm:text-[1rem]">One Year</span>
               </label>
             </div>
           </div>
-          <div class="w-full pt-3">
+
+          <div class="w-full">
             <button type="submit" class="w-full py-3 sm:py-3.5 bg-[#3770ee] hover:bg-[#4a82ff] text-white text-[1rem] sm:text-[1.05rem] font-semibold rounded-xl shadow-lg hover:shadow-blue-500/30 transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer">Shorten URL</button>
           </div>
-          <span id="result"></span>
+
+          <div id="message-container" class="w-full mt-4" style="display:none;">
+            <span id="created_link" class="block"></span>
+            <span id="result" class="block"></span>
+          </div>
         </form>
       </div>
     </div>
   </div>
-  <script>
-    function renderShortenedUrl(data) {
-      const container = document.getElementById('result')
-      const urlPrefix = document.getElementById('server_url').textContent
-      const shortenedCode = urlPrefix + data.shortened_code
-    
-      document.getElementById('result').textContent = shortenedCode
-    }
-    document.body.addEventListener('htmx:afterRequest', (evt) => {
-      try {
-        const response = JSON.parse(evt.detail.xhr.responseText)
-        renderShortenedUrl(response)
-      } catch (e) {
-        console.error('HTMX JSON parse error:', e)
-      }
-    })
-  </script>
 {% endblock %}
