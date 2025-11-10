@@ -41,7 +41,7 @@ class URLBase(BaseModel):
 
     @field_validator("shortened_code")
     def validate_shortened_code(cls, value: str) -> str:
-        pattern = re.compile(r"[!@#$^*()+\[\]{}|\\;\"'<>,]")
+        pattern = re.compile(r"[!@#$^*()+\[\]{}|\\;\"'<>,\s]")
         if re.search(pattern, value):
             raise ValueError("Allowed symbols are: ., %, &, :, /, -, _, ?")
         return value
