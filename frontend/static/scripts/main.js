@@ -38,7 +38,6 @@ document.body.addEventListener('htmx:afterRequest', (evt) => {
         try {
             const response = JSON.parse(evt.detail.xhr.responseText)
             codeInput.value = ''
-            codeInput.style.borderColor = '#3770ee'
             createdText.style.color = '#4ade80'
             createdText.textContent = 'Your short link is ready! Click to copy.'
             renderShortenedUrl(response)
