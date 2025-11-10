@@ -24,6 +24,7 @@ async def create_shortened_url(
     url_data = URLCreate(
         original_url=original_url,
         shortened_code=shortened_code,
+        clicks=0,
         expires_at=datetime.now(UTC) + timedelta(days=expires_at),
     )
 
@@ -39,6 +40,7 @@ async def redirect_on_original_url(
     service: URLService = Depends(get_url_service),  # noqa: B008
 ):
     url_data = await service.get_original_url_by_shortened_url(short_code)
+    await service.update_clicks_count(short_code)
     return RedirectResponse(
         url_data.original_url, status_code=status.HTTP_302_FOUND
     )

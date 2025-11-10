@@ -50,3 +50,20 @@ class URLService:
             shortened_url_data
         )
         return URLResponse.model_validate(shortened_url)
+
+    async def update_clicks_count(self, shortened_code: str) -> dict:
+        url_to_update = await self.url_repository.get_url_by_shortened_code(
+            shortened_code
+        )
+
+        if not url_to_update:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"URL with code {shortened_code} cannot be updated",
+            )
+
+        updated_url = await self.url_repository.update_clicks_count(
+            shortened_code
+        )
+
+        return updated_url

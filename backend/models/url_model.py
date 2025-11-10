@@ -14,9 +14,10 @@ class URLModel(Base):
     shortened_code: Mapped[str] = mapped_column(
         unique=True, index=True, nullable=False
     )
+    clicks: Mapped[int] = mapped_column(nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(UTC)
     )
     expires_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=True
+        DateTime(timezone=True), nullable=False
     )
