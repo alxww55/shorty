@@ -1,4 +1,4 @@
-from sqlalchemy import Result, select
+from sqlalchemy import Result, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..models.url_model import URLModel
@@ -26,3 +26,14 @@ class URLRepository:
         await self.session.commit()
         await self.session.refresh(url)
         return url
+
+    async def update_clicks_count(self, shortened_code: str) -> dict:
+        result: Result = await self.session.execute(
+            update(URLModel)
+            .where(URLModel.shortened_code == shortened_code)
+            .values(clicks=URLModel.clicks + 1)
+        )
+        await self.session.commit()
+        if result:
+            return {"updated": "true"}
+        return {"updated": "false"}

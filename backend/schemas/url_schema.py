@@ -22,6 +22,7 @@ class URLBase(BaseModel):
         max_length=2048,
         description="Shortened URL code",
     )
+    clicks: int = Field(..., ge=0)
     expires_at: datetime = Field(
         ...,
         description="Shortened URL expires at",
