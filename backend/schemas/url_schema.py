@@ -1,7 +1,6 @@
 import re
 from datetime import UTC, datetime
 
-from fastapi import HTTPException
 from pydantic import (
     BaseModel,
     ConfigDict,
