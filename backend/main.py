@@ -1,4 +1,3 @@
-from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,17 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import ValidationError
 
 from .config import settings
-from .database import db_helper
-from .models.base_model import Base
 from .routes import frontend_router, url_router
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    async with db_helper.engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-        await conn.run_sync(Base.metadata.create_all)
-    yield
 
 
 def check_docs_availability():
@@ -28,7 +17,6 @@ def check_docs_availability():
 app = FastAPI(
     title=settings.app_name,
     debug=settings.debug,
-    lifespan=lifespan,
     docs_url=check_docs_availability(),
 )
 
