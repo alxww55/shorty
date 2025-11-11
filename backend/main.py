@@ -2,7 +2,10 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.requests import Request
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+from pydantic import ValidationError
 
 from .config import settings
 from .database import db_helper
@@ -40,3 +43,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.exception_handler(ValidationError)
+async def pydantic_validation_exception_handler(
+    request: Request, exc: ValidationError
+):
+    errors = [err["msg"].split(",")[1::] for err in exc.errors()]
+    return JSONResponse(
+        status_code=422,
+        content={"detail": errors},
+    )

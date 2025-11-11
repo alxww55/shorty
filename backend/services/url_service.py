@@ -44,7 +44,7 @@ class URLService:
         ):
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail=f"URL with alias {shortened_url_data.shortened_code} already exists",  # noqa: E501
+                detail=f"Alias '{shortened_url_data.shortened_code}' is already taken. Try another one.",  # noqa: E501
             )
         shortened_url = await self.url_repository.create_url(
             shortened_url_data
