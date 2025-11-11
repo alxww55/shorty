@@ -12,13 +12,13 @@ from pydantic import (
 class URLBase(BaseModel):
     original_url: str = Field(
         ...,
-        min_length=1,
+        min_length=3,
         max_length=2048,
         description="Original URL",
     )
     shortened_code: str = Field(
         ...,
-        min_length=1,
+        min_length=3,
         max_length=2048,
         description="Shortened URL code",
     )
@@ -65,7 +65,7 @@ class URLBase(BaseModel):
     @field_validator("clicks")
     @classmethod
     def validate_clicks(cls, value: int) -> int:
-        if value is None or value <= 0:
+        if value is None or value < 0:
             raise ValueError()
         return value
 
