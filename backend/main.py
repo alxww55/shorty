@@ -1,4 +1,3 @@
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.requests import Request
@@ -9,15 +8,10 @@ from pydantic import ValidationError
 from .config import settings
 from .routes import frontend_router, url_router
 
-
-def check_docs_availability():
-    return "/docs" if settings.debug else None
-
-
 app = FastAPI(
     title=settings.app_name,
     debug=settings.debug,
-    docs_url=check_docs_availability(),
+    docs_url="/docs" if settings.debug else None,
 )
 
 app.include_router(url_router)
