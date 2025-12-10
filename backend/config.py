@@ -13,18 +13,18 @@ class DBConfig(BaseSettings):
     @property
     def database_url(self) -> PostgresDsn:
         return PostgresDsn.build(
-            scheme="postgresql+psycopg",
+            scheme="postgresql+asyncpg",
             username=self.db_user,
             password=self.db_password,
             host=self.db_host,
             port=self.db_port,
-            path=f"/{self.db_name}",
+            path=f"{self.db_name}",
         )
 
     # Safe DB URL represented as string for Alembic
     @property
     def database_url_safe(self) -> str:
-        return f"postgresql+psycopg://{self.db_user}:{self.db_password}@{self.db_host}:{self.db_port}/{self.db_name}"
+        return f"postgresql+asyncpg://{self.db_user}:{self.db_password}@{self.db_host}:{self.db_port}/{self.db_name}"
 
 
 class Settings(BaseSettings):
