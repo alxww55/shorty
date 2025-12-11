@@ -1,3 +1,6 @@
+from collections.abc import Sequence
+from datetime import UTC, datetime
+
 from sqlalchemy import Result, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -20,6 +23,12 @@ class URLRepository:
         )
         return result.scalar_one_or_none()
 
+    async def get_outdated_urls(self) -> Sequence[URLModel] | None:
+        result: Result = await self.session.execute(
+            select(URLModel).where(URLModel.expires_at < datetime.now(UTC))
+        )
+        return result.scalars().all()
+
     async def create_url(self, url_data: URLCreate) -> URLModel:
         url = URLModel(**url_data.model_dump())
         self.session.add(url)
@@ -37,3 +46,14 @@ class URLRepository:
         if result:
             return {"updated": "true"}
         return {"updated": "false"}
+
+    async def delete_outdated_urls(
+        self, outdated_urls: Sequence[URLModel]
+    ) -> dict[str, str | Exception]:
+        try:
+            for item in outdated_urls:
+                await self.session.delete(item)
+            await self.session.commit()
+            return {"message": f"deleted {len(outdated_urls)} urls"}
+        except Exception as e:
+            return {"deleted": "false", "reason": e}

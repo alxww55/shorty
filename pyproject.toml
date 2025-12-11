@@ -16,6 +16,9 @@ dependencies = [
     "pydantic-settings (>=2.11.0,<3.0.0)",
     "python-multipart (>=0.0.20,<0.0.21)",
     "asyncpg (>=0.31.0,<0.32.0)",
+    "taskiq (>=0.12.1,<0.13.0)",
+    "taskiq-aio-pika (>=0.5.0,<0.6.0)",
+    "taskiq-fastapi (>=0.4.0,<0.5.0)",
 ]
 
 

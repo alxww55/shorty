@@ -1,12 +1,26 @@
+from collections.abc import AsyncGenerator
+
 from fastapi import FastAPI
+from fastapi.concurrency import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.requests import Request
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import ValidationError
 
+from backend.messaging import broker
+
 from .config import settings
 from .routes import frontend_router, url_router
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
+    if not broker.is_worker_process:
+        await broker.startup()
+    yield
+    if not broker.is_worker_process:
+        await broker.shutdown()
 
 app = FastAPI(
     title=settings.app_name,

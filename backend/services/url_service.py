@@ -33,6 +33,14 @@ class URLService:
             )
         return URLResponse.model_validate(response_url)
 
+    # async def get_outdated_urls(self) -> Sequence[URLResponse] | None:
+    #     outdated_urls = await self.url_repository.get_outdated_urls()
+
+    #     if not outdated_urls:
+    #         return
+    #     else:
+    #         return outdated_urls  # type: ignore
+
     async def create_shortened_url(
         self, shortened_url_data: URLCreate
     ) -> URLResponse:
@@ -51,7 +59,7 @@ class URLService:
         )
         return URLResponse.model_validate(shortened_url)
 
-    async def update_clicks_count(self, shortened_code: str) -> dict:
+    async def update_clicks_count(self, shortened_code: str) -> dict[str, str]:
         url_to_update = await self.url_repository.get_url_by_shortened_code(
             shortened_code
         )
@@ -67,3 +75,10 @@ class URLService:
         )
 
         return updated_url
+
+    async def delete_outdated_urls(self) -> dict[str, str | Exception]:
+        outdated_urls = await self.url_repository.get_outdated_urls()
+        if not outdated_urls:
+            return {"message": "no outdated urls found"}
+
+        return await self.url_repository.delete_outdated_urls(outdated_urls)
