@@ -72,18 +72,29 @@ class URLBase(BaseModel):
             raise ValueError("Clicks cannot be lower than 0")
         return value
 
+    # @field_validator("expires_at")
+    # @classmethod
+    # def validate_expires_at(cls, value: datetime) -> datetime:
+    #     if value is not None:
+    #         if not isinstance(value, datetime):
+    #             raise TypeError("expires_at must be a valid datetime value.")
+    #         if value < datetime.now(UTC):
+    #             raise ValueError("Field expires_at cannot be in the past.")
+    #     return value
+
+
+class URLCreate(URLBase):
     @field_validator("expires_at")
     @classmethod
     def validate_expires_at(cls, value: datetime) -> datetime:
         if value is not None:
             if not isinstance(value, datetime):
-                raise TypeError("expires_at must be a valid datetime value.")
+                raise TypeError(
+                    "Expiration date must be a valid datetime value."
+                )
             if value < datetime.now(UTC):
-                raise ValueError("Field expires_at cannot be in the past.")
+                raise ValueError("Please choose a future expiration date.")
         return value
-
-
-class URLCreate(URLBase):
     pass
 
 
