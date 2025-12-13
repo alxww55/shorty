@@ -1,0 +1,85 @@
+services:
+  # The app itself, background worker and tasks scheduler
+  shorty:
+    hostname: shorty
+    container_name: shorty
+    build:
+      dockerfile: ./docker/Dockerfile.app
+      context: ./
+    env_file: .env
+    ports:
+      - 80:8000
+      - 443:8000
+    entrypoint: ./migrate.sh
+    command: python3 run.py
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  worker:
+    hostname: worker
+    container_name: shorty-worker
+    build:
+      dockerfile: ./docker/Dockerfile.helper
+      context: ./
+    env_file: .env
+    command: taskiq worker backend.messaging.broker:broker --fs-discover --tasks-pattern "backend/messaging/tasks.py"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+
+  scheduler:
+    hostname: scheduler
+    container_name: shorty-scheduler
+    build:
+      dockerfile: ./docker/Dockerfile.helper
+      context: ./
+    env_file: .env
+    command: taskiq scheduler backend.messaging.scheduler:scheduler --fs-discover --tasks-pattern "backend/messaging/tasks.py"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+
+  # Database configuration: change if you have own instance
+  postgres:
+    hostname: postgres
+    container_name: postgres
+    image: postgres:18.1-trixie
+    environment:
+      POSTGRES_USER: ${DB_CONFIG__DB_USER}
+      POSTGRES_PASSWORD: ${DB_CONFIG__DB_PASSWORD}
+      POSTGRES_DB: ${DB_CONFIG__DB_NAME}
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # Message broker
+  rabbitmq:
+    image: rabbitmq:4.2.1-alpine
+    hostname: rabbitmq
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_CONFIG__RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_CONFIG__RABBITMQ_PASSWORD}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  pgdata:
+  rabbitmq-data:
