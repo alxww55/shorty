@@ -33,14 +33,6 @@ class URLService:
             )
         return URLResponse.model_validate(response_url)
 
-    # async def get_outdated_urls(self) -> Sequence[URLResponse] | None:
-    #     outdated_urls = await self.url_repository.get_outdated_urls()
-
-    #     if not outdated_urls:
-    #         return
-    #     else:
-    #         return outdated_urls  # type: ignore
-
     async def create_shortened_url(
         self, shortened_url_data: URLCreate
     ) -> URLResponse:
