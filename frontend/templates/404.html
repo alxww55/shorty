@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="flex items-center justify-center min-h-screen px-4">
+    <div class="text-center space-y-8 max-w-md">
+      <!-- 404 Error Code -->
+      <div class="relative">
+        <div class="text-7xl sm:text-8xl font-bold bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 bg-clip-text text-transparent">404</div>
+      </div>
+
+      <!-- Title and Description -->
+      <div class="space-y-3">
+        <h1 class="text-2xl sm:text-3xl font-semibold text-white">Page Not Found</h1>
+        <p class="text-sm sm:text-base text-gray-400">The page you are looking for might have been deleted or is temporarily unavailable.</p>
+      </div>
+    </div>
+  </div>
+{% endblock %}

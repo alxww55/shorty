@@ -24,6 +24,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     if not broker.is_worker_process:
         await broker.shutdown()
 
+
 app = FastAPI(
     title=settings.app_name,
     debug=settings.debug,
@@ -55,11 +56,7 @@ async def pydantic_validation_exception_handler(
 
 
 @app.exception_handler(404)
-async def not_found_handler(
-    request: Request, exc
-):
+async def not_found_handler(request: Request, exc):
     return templates.TemplateResponse(
-        "404.html",
-        {"request": request},
-        status_code=exc.status_code
+        "404.html", {"request": request}, status_code=exc.status_code
     )

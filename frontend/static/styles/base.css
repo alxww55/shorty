@@ -1,6 +1,31 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
 
+* {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
 body {
     font-family: "Lato";
     font-weight: 400;
+}
+
+button,
+input,
+a {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+input {
+    caret-color: #60a5fa;
+}
+
+:focus-visible {
+    outline: 2px solid #3770ee;
+    outline-offset: 2px;
+}
+
+::selection {
+    background-color: #3770ee;
+    color: white;
 }
