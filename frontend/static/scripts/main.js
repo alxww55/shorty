@@ -7,8 +7,20 @@ const serverUrlElem = document.getElementById('server_url');
 const copyButton = document.getElementById('copy-button');
 const resultContainer = document.getElementById('result-container');
 
-const CLIPBOARD_ICON_SVG = '<svg class="w-5 h-5" fill="#06df72" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"></path></svg>';
-const CHECKMARK_ICON_SVG = '<svg class="w-5 h-5" fill="#06df72" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"></path></svg>';
+const ICON_PATH_CHECKMARK = 'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z';
+
+function createIconSvg(path) {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'w-5 h-5');
+    svg.setAttribute('fill', '#06df72');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+
+    const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    pathEl.setAttribute('d', path);
+    svg.appendChild(pathEl);
+    return svg;
+}
 
 function createSvgPath(d, fillRule = null) {
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -67,19 +79,28 @@ function copyToClipboard() {
     if (!text) return;
 
     navigator.clipboard.writeText(text).then(() => {
-        copyButton.innerHTML = CHECKMARK_ICON_SVG;
+        copyButton.innerHTML = '';
+        copyButton.appendChild(createIconSvg(ICON_PATH_CHECKMARK));
         copyButton.classList.add('bg-green-500/40', 'border-green-500');
         copyButton.classList.remove('bg-green-500/20', 'border-green-500/50');
 
         setTimeout(() => {
-            copyButton.innerHTML = CLIPBOARD_ICON_SVG;
+            copyButton.innerHTML = '';
+            copyButton.appendChild(originalCopyButtonIcon.cloneNode(true));
             copyButton.classList.remove('bg-green-500/40', 'border-green-500');
             copyButton.classList.add('bg-green-500/20', 'border-green-500/50');
         }, 2000);
     });
 }
 
-copyButton.addEventListener('click', copyToClipboard);
+let originalCopyButtonIcon = null;
+
+copyButton.addEventListener('click', function () {
+    if (!originalCopyButtonIcon) {
+        originalCopyButtonIcon = copyButton.firstChild.cloneNode(true);
+    }
+    copyToClipboard();
+});
 result.addEventListener('click', copyToClipboard);
 
 document.body.addEventListener('htmx:beforeRequest', hideMessages);
