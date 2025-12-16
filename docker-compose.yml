@@ -12,6 +12,8 @@ services:
       - 443:8000
     entrypoint: ./migrate.sh
     command: python3 run.py
+    volumes:
+      - ./logs:/usr/local/shorty/logs
     depends_on:
       postgres:
         condition: service_healthy

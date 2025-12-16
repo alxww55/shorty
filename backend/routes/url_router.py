@@ -3,6 +3,7 @@ from datetime import UTC, datetime, timedelta
 from fastapi import APIRouter, Depends, Form, status
 from fastapi.requests import Request
 from fastapi.responses import RedirectResponse
+from loguru import logger
 
 from backend.config import settings
 
@@ -29,7 +30,7 @@ async def create_shortened_url(
         clicks=0,
         expires_at=datetime.now(UTC) + timedelta(days=expires_in),
     )
-
+    logger.info("Created URL with parameters {url_data}", url_data=url_data)
     return await service.create_shortened_url(url_data)
 
 
@@ -43,6 +44,10 @@ async def redirect_on_original_url(
 ):
     url_data = await service.get_original_url_by_shortened_url(short_code)
     await service.update_clicks_count(short_code)
+    logger.info(
+        "Redirect to original URL for URL with code {short_code}",
+        short_code=short_code,
+    )
     return RedirectResponse(
         url_data.original_url, status_code=status.HTTP_302_FOUND
     )

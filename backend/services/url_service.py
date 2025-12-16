@@ -1,4 +1,5 @@
 from fastapi import HTTPException, status
+from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..repositories.url_repository import URLRepository
@@ -13,10 +14,17 @@ class URLService:
         response_url = await self.url_repository.get_url_by_id(url_id)
 
         if not response_url:
+            logger.warning(
+                "URL with id {url_id} not found in database", url_id=url_id
+            )
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"URL with id {url_id} not found",
             )
+        logger.info(
+            "URL with id {url_id} was found in database and served",
+            url_id=url_id,
+        )
         return URLResponse.model_validate(response_url)
 
     async def get_original_url_by_shortened_url(
@@ -27,10 +35,18 @@ class URLService:
         )
 
         if not response_url:
+            logger.warning(
+                "URL with code {shortened_url} not found in database",
+                shortened_url=shortened_url,
+            )
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"URL with code {shortened_url} not found",
             )
+        logger.info(
+            "URL with code {shortened_url} was found in database and served",
+            shortened_url=shortened_url,
+        )
         return URLResponse.model_validate(response_url)
 
     async def create_shortened_url(
@@ -42,12 +58,20 @@ class URLService:
             )
             is not None
         ):
+            logger.warning(
+                "URL with code {shortened_url_data.shortened_code} cannot be create as this alias is already taken",  # noqa: E501
+                shortened_url_data=shortened_url_data,
+            )
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail=f"Alias '{shortened_url_data.shortened_code}' is already taken. Try another one.",  # noqa: E501
             )
         shortened_url = await self.url_repository.create_url(
             shortened_url_data
+        )
+        logger.info(
+            "Entry for URL with parameters {shortened_url_data} was created in database",  # noqa: E501
+            shortened_url_data=shortened_url_data,
         )
         return URLResponse.model_validate(shortened_url)
 
@@ -57,6 +81,10 @@ class URLService:
         )
 
         if not url_to_update:
+            logger.warning(
+                "URL with code {shortened_code} cannot be updated as it not exists in database",  # noqa: E501
+                shortened_code=shortened_code,
+            )
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"URL with code {shortened_code} cannot be updated",
@@ -65,12 +93,22 @@ class URLService:
         updated_url = await self.url_repository.update_clicks_count(
             shortened_code
         )
-
+        logger.info(
+            "Updated clicks count for URL with code {shortened_code}",
+            shortened_code=shortened_code,
+        )
         return updated_url
 
     async def delete_outdated_urls(self) -> dict[str, str | Exception]:
         outdated_urls = await self.url_repository.get_outdated_urls()
         if not outdated_urls:
+            logger.info(
+                "No outdated URLs found in database",
+            )
             return {"message": "no outdated urls found"}
 
+        logger.info(
+            "Deleted {count} outdated URLs from database",
+            count=len(outdated_urls),
+        )
         return await self.url_repository.delete_outdated_urls(outdated_urls)
