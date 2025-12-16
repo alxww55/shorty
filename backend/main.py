@@ -1,17 +1,19 @@
 from collections.abc import AsyncGenerator
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.concurrency import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.requests import Request
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from pydantic import ValidationError
 
 from backend.messaging import broker
 
 from .config import settings
 from .routes import frontend_router, url_router
+
+templates = Jinja2Templates(directory="./frontend/templates")
 
 
 @asynccontextmanager
@@ -49,4 +51,15 @@ async def pydantic_validation_exception_handler(
     return JSONResponse(
         status_code=422,
         content={"detail": errors},
+    )
+
+
+@app.exception_handler(404)
+async def not_found_handler(
+    request: Request, exc
+):
+    return templates.TemplateResponse(
+        "404.html",
+        {"request": request},
+        status_code=exc.status_code
     )

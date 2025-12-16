@@ -20,16 +20,15 @@ class URLBase(BaseModel):
     shortened_code: str = Field(
         ...,
         min_length=3,
-        max_length=2048,
+        max_length=100,
         description="Shortened URL code",
     )
 
-    clicks: int = Field(..., ge=0)
+    clicks: int = Field(default=0, ge=0)
 
     expires_at: datetime = Field(
         ...,
         description="Shortened URL expires at",
-        examples=[None],
     )
 
     model_config = ConfigDict(
@@ -65,37 +64,14 @@ class URLBase(BaseModel):
 
         return value
 
-    @field_validator("clicks")
-    @classmethod
-    def validate_clicks(cls, value: int) -> int:
-        if value is None or value < 0:
-            raise ValueError("Clicks cannot be lower than 0")
-        return value
-
-    # @field_validator("expires_at")
-    # @classmethod
-    # def validate_expires_at(cls, value: datetime) -> datetime:
-    #     if value is not None:
-    #         if not isinstance(value, datetime):
-    #             raise TypeError("expires_at must be a valid datetime value.")
-    #         if value < datetime.now(UTC):
-    #             raise ValueError("Field expires_at cannot be in the past.")
-    #     return value
-
 
 class URLCreate(URLBase):
     @field_validator("expires_at")
     @classmethod
-    def validate_expires_at(cls, value: datetime) -> datetime:
-        if value is not None:
-            if not isinstance(value, datetime):
-                raise TypeError(
-                    "Expiration date must be a valid datetime value."
-                )
-            if value < datetime.now(UTC):
-                raise ValueError("Please choose a future expiration date.")
+    def validate_expires_in(cls, value: datetime) -> datetime:
+        if value < datetime.now(UTC):
+            raise ValueError("Please choose a future expiration date.")
         return value
-    pass
 
 
 class URLResponse(URLBase):
