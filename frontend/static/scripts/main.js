@@ -25,16 +25,31 @@ function showMessagesError(detail) {
     messageContainer.style.display = 'block';
     resultContainer.style.display = 'none';
 
+    const errorSvg = '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>';
+
+    let errorMessage = 'Unexpected error';
     if (typeof detail === 'string') {
-        createdText.innerHTML = `<span class="text-sm text-red-400 font-medium flex items-center gap-2"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>${detail}</span>`;
-        result.textContent = '';
+        errorMessage = detail;
     } else if (Array.isArray(detail)) {
-        createdText.innerHTML = `<span class="text-sm text-red-400 font-medium flex items-center gap-2"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>${detail.join(', ')}</span>`;
-        result.textContent = '';
-    } else {
-        createdText.innerHTML = `<span class="text-sm text-red-400 font-medium flex items-center gap-2"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>Unexpected error</span>`;
-        result.textContent = '';
+        errorMessage = detail.join(', ');
     }
+
+    createdText.innerHTML = '';
+    const span = document.createElement('span');
+    span.className = 'text-sm text-red-400 font-medium flex items-center gap-2';
+
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'w-4 h-4');
+    svg.setAttribute('fill', 'currentColor');
+    svg.setAttribute('viewBox', '0 0 20 20');
+    svg.innerHTML = errorSvg;
+
+    const text = document.createTextNode(errorMessage);
+
+    span.appendChild(svg);
+    span.appendChild(text);
+    createdText.appendChild(span);
+    result.textContent = '';
 }
 
 function renderShortenedUrl(data) {
@@ -47,13 +62,22 @@ function copyToClipboard() {
     const text = result.textContent;
     if (text) {
         navigator.clipboard.writeText(text).then(() => {
-            const originalSvg = copyButton.innerHTML;
-            copyButton.innerHTML = '<svg class="w-5 h-5" fill="#06df72" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"></path></svg>';
+            const checkmarkSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            checkmarkSvg.setAttribute('class', 'w-5 h-5');
+            checkmarkSvg.setAttribute('fill', '#06df72');
+            checkmarkSvg.setAttribute('viewBox', '0 0 24 24');
+            checkmarkSvg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+            checkmarkSvg.innerHTML = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"></path>';
+
+            const originalChild = copyButton.firstChild;
+            copyButton.innerHTML = '';
+            copyButton.appendChild(checkmarkSvg);
             copyButton.classList.add('bg-green-500/40', 'border-green-500');
             copyButton.classList.remove('bg-green-500/20', 'border-green-500/50');
 
             setTimeout(() => {
-                copyButton.innerHTML = originalSvg;
+                copyButton.innerHTML = '';
+                copyButton.appendChild(originalChild.cloneNode(true));
                 copyButton.classList.remove('bg-green-500/40', 'border-green-500');
                 copyButton.classList.add('bg-green-500/20', 'border-green-500/50');
             }, 2000);
@@ -82,7 +106,23 @@ document.body.addEventListener('htmx:afterRequest', (evt) => {
     if (status === 201) {
         try {
             codeInput.value = '';
-            createdText.innerHTML = '<span class="text-sm text-green-400 font-medium flex items-center gap-2"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Your short link is ready!</span>';
+
+            const span = document.createElement('span');
+            span.className = 'text-sm text-green-400 font-medium flex items-center gap-2';
+
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('class', 'w-4 h-4');
+            svg.setAttribute('fill', 'currentColor');
+            svg.setAttribute('viewBox', '0 0 20 20');
+            svg.innerHTML = '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>';
+
+            const text = document.createTextNode('Your short link is ready!');
+
+            span.appendChild(svg);
+            span.appendChild(text);
+            createdText.innerHTML = '';
+            createdText.appendChild(span);
+
             renderShortenedUrl(responseJson);
             showMessagesWithLink();
         } catch {
