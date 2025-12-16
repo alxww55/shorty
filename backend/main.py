@@ -6,12 +6,20 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from loguru import logger
 from pydantic import ValidationError
 
 from backend.messaging import broker
 
 from .config import settings
 from .routes import frontend_router, url_router
+
+logger.add(
+    sink=settings.logging_config.log_file_path,
+    rotation=settings.logging_config.rotation,
+    format=settings.logging_config.format,
+    level="INFO",
+)
 
 templates = Jinja2Templates(directory="./frontend/templates")
 
@@ -20,8 +28,10 @@ templates = Jinja2Templates(directory="./frontend/templates")
 async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     if not broker.is_worker_process:
         await broker.startup()
+        logger.info("Broker startup successfully")
     yield
     if not broker.is_worker_process:
+        logger.info("Broker shutdown successfully")
         await broker.shutdown()
 
 
@@ -49,6 +59,9 @@ async def pydantic_validation_exception_handler(
     request: Request, exc: ValidationError
 ):
     errors = [err["msg"].split(",")[1::] for err in exc.errors()]
+    logger.error(
+        "Received following error(s) from API: {errors}, 422", errors=errors
+    )
     return JSONResponse(
         status_code=422,
         content={"detail": errors},
@@ -57,6 +70,7 @@ async def pydantic_validation_exception_handler(
 
 @app.exception_handler(404)
 async def not_found_handler(request: Request, exc):
+    logger.error("Requested ressource was not found, 404")
     return templates.TemplateResponse(
         "404.html", {"request": request}, status_code=exc.status_code
     )
