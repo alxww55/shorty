@@ -72,5 +72,12 @@ async def pydantic_validation_exception_handler(
 async def not_found_handler(request: Request, exc):
     logger.error("Requested ressource was not found, 404")
     return templates.TemplateResponse(
-        "404.html", {"request": request}, status_code=exc.status_code
+        request=request,
+        name="404.html",
+        context={
+            "app_name": settings.app_name,
+            "version": settings.version,
+            "server_url": f"{request.url.scheme}://{request.url.hostname}/",
+        },
+        status_code=exc.status_code
     )

@@ -5,13 +5,11 @@ from fastapi.requests import Request
 from fastapi.responses import RedirectResponse
 from loguru import logger
 
-from backend.config import settings
-
 from ..schemas.url_schema import URLCreate, URLResponse
 from ..services.service_dependency import get_url_service
 from ..services.url_service import URLService
 
-router = APIRouter(tags=["shorty"], prefix=settings.api_prefix)
+router = APIRouter(tags=["shorty"])
 
 
 @router.post(

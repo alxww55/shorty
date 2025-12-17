@@ -58,7 +58,6 @@ class Settings(BaseSettings):
     app_name: str
     description: str
     version: str
-    api_prefix: str
     static_dir: str
     debug: bool
     cors_origins: list[str]
