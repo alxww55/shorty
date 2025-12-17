@@ -51,7 +51,6 @@ class RabbitmqConfig(BaseSettings):
 class LoggingCongig(BaseSettings):
     log_file_path: str
     rotation: str
-    retention: str
     format: str
 
 
