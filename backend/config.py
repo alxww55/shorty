@@ -60,6 +60,8 @@ class Settings(BaseSettings):
     version: str
     static_dir: str
     debug: bool
+    host: str
+    port: int
     cors_origins: list[str]
 
     db_config: DBConfig

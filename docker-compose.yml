@@ -8,8 +8,8 @@ services:
       context: ./
     env_file: .env
     ports:
-      - 80:8000
-      - 443:8000
+      - 80:${PORT}
+      - 443:${PORT}
     entrypoint: ./migrate.sh
     command: python3 run.py
     volumes:
