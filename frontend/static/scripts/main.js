@@ -8,11 +8,12 @@ const copyButton = document.getElementById('copy-button');
 const resultContainer = document.getElementById('result-container');
 
 const ICON_PATH_CHECKMARK = 'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z';
+const ICON_PATH_COPY = 'M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z';
 
-function createIconSvg(path) {
+function createIconSvg(path, color = '#06df72') {
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('class', 'w-5 h-5');
-    svg.setAttribute('fill', '#06df72');
+    svg.setAttribute('fill', color);
     svg.setAttribute('viewBox', '0 0 24 24');
     svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
 
@@ -44,16 +45,26 @@ function createMessageSpan(text, iconPath, iconClass = 'w-4 h-4', textClass = 't
     return span;
 }
 
+function resetCopyButtonToCopyIcon() {
+    copyButton.innerHTML = '';
+    copyButton.appendChild(createIconSvg(ICON_PATH_COPY));
+    copyButton.classList.remove('bg-green-500/40', 'border-green-500');
+    copyButton.classList.add('bg-green-500/20', 'border-green-500/50');
+}
+
 function hideMessages() {
     messageContainer.style.display = 'none';
     resultContainer.style.display = 'none';
     createdText.textContent = '';
     result.textContent = '';
+    // НЕ сбрасываем кнопку здесь, чтобы не мешать копированию
 }
 
 function showMessagesWithLink() {
     messageContainer.style.display = 'block';
     resultContainer.style.display = 'block';
+    // Сбрасываем кнопку только когда показываем НОВУЮ ссылку
+    resetCopyButtonToCopyIcon();
 }
 
 function showMessagesError(detail) {
@@ -66,6 +77,8 @@ function showMessagesError(detail) {
     createdText.innerHTML = '';
     createdText.appendChild(createMessageSpan(errorMessage, errorPath));
     result.textContent = '';
+    // При ошибке тоже сбрасываем кнопку
+    resetCopyButtonToCopyIcon();
 }
 
 function renderShortenedUrl(data) {
@@ -83,27 +96,24 @@ function copyToClipboard() {
         copyButton.appendChild(createIconSvg(ICON_PATH_CHECKMARK));
         copyButton.classList.add('bg-green-500/40', 'border-green-500');
         copyButton.classList.remove('bg-green-500/20', 'border-green-500/50');
-
-        setTimeout(() => {
-            copyButton.innerHTML = '';
-            copyButton.appendChild(originalCopyButtonIcon.cloneNode(true));
-            copyButton.classList.remove('bg-green-500/40', 'border-green-500');
-            copyButton.classList.add('bg-green-500/20', 'border-green-500/50');
-        }, 2000);
     });
 }
 
-let originalCopyButtonIcon = null;
-
-copyButton.addEventListener('click', function () {
-    if (!originalCopyButtonIcon) {
-        originalCopyButtonIcon = copyButton.firstChild.cloneNode(true);
-    }
-    copyToClipboard();
+// Инициализация кнопки при загрузке
+document.addEventListener('DOMContentLoaded', function () {
+    resetCopyButtonToCopyIcon();
 });
+
+copyButton.addEventListener('click', copyToClipboard);
 result.addEventListener('click', copyToClipboard);
 
-document.body.addEventListener('htmx:beforeRequest', hideMessages);
+document.body.addEventListener('htmx:beforeRequest', function (evt) {
+    // Проверяем, что это запрос на создание новой ссылки, а не другой
+    const target = evt.detail.target;
+    if (target && (target.id === 'result-container' || target.id === 'message-container')) {
+        hideMessages();
+    }
+});
 
 document.body.addEventListener('htmx:afterRequest', (evt) => {
     const xhr = evt.detail.xhr;
@@ -126,11 +136,11 @@ document.body.addEventListener('htmx:afterRequest', (evt) => {
             createdText.innerHTML = '';
             createdText.appendChild(createMessageSpan('Your short link is ready!', successPath, 'w-4 h-4', 'text-sm text-green-400 font-medium flex items-center gap-2'));
             renderShortenedUrl(responseJson);
-            showMessagesWithLink();
+            showMessagesWithLink(); // Здесь сбрасываем кнопку
         } catch {
             hideMessages();
         }
     } else if ([409, 422, 500].includes(status)) {
-        showMessagesError(detail);
+        showMessagesError(detail); // Здесь тоже сбрасываем кнопку
     }
 });
