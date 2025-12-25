@@ -2,13 +2,13 @@
 
 A comprehensive self-hosted web application designed for simple and fast URL shortening
 
-![Shorty](https://img.shields.io/badge/Shorty-0.1.0-3776AB?style=flat&logoColor=white)
+![Shorty](https://img.shields.io/badge/Shorty-0.1.1-3776AB?style=flat&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.14-3776AB?style=flat&logo=python&logoColor=white)
 ![Docker Ready](https://img.shields.io/badge/Docker-Ready-3776AB?style=flat&logo=docker&logoColor=white)
 ![GitHub License](https://img.shields.io/github/license/alxww55/shorty)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/3bceba252c77495dac7ffbe94309e2ba)](https://app.codacy.com/gh/alxww55/shorty/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
-![alt text](./screeshots/shorty.png)
+![alt text](./screenshots/shorty.png)
 
 ## Key Features
 - **Dynamic Prefix** - automatically prepends your hostname to shortened URLs
@@ -75,6 +75,7 @@ RABBITMQ_CONFIG__RABBITMQ_PORT = 5672
 # ============================================================================
 LOGGING_CONFIG__LOG_FILE_PATH = "./logs/logs.log"
 LOGGING_CONFIG__ROTATION = "1 day"                  # Log file rotation interval
+LOGGING_CONFIG__RETENTION = "1 day"                 # Log file retention interval
 LOGGING_CONFIG__FORMAT = "{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}"
 
 # ============================================================================

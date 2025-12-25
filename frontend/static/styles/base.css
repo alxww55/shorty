@@ -16,6 +16,10 @@ a {
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+label {
+    cursor: pointer;
+}
+
 input {
     caret-color: #60a5fa;
 }
