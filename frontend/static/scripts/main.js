@@ -57,13 +57,11 @@ function hideMessages() {
     resultContainer.style.display = 'none';
     createdText.textContent = '';
     result.textContent = '';
-    // НЕ сбрасываем кнопку здесь, чтобы не мешать копированию
 }
 
 function showMessagesWithLink() {
     messageContainer.style.display = 'block';
-    resultContainer.style.display = 'block';
-    // Сбрасываем кнопку только когда показываем НОВУЮ ссылку
+    resultContainer.style.display = 'flex';
     resetCopyButtonToCopyIcon();
 }
 
@@ -71,19 +69,42 @@ function showMessagesError(detail) {
     messageContainer.style.display = 'block';
     resultContainer.style.display = 'none';
 
-    let errorMessage = detail instanceof Array ? detail.join(', ') : (typeof detail === 'string' ? detail : 'Unexpected error');
-    const errorPath = 'M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z';
+    let errorMessage = 'Unexpected error';
 
+    if (Array.isArray(detail)) {
+        const flattened = detail.flat().filter(Boolean);
+        if (flattened.length) {
+            errorMessage = flattened.join(', ');
+        } else {
+            errorMessage = 'Validation error';
+        }
+    } else if (typeof detail === 'string' && detail.trim()) {
+        errorMessage = detail;
+    } else if (typeof detail === 'object' && detail !== null) {
+        const firstKey = Object.keys(detail)[0];
+        if (firstKey) {
+            const val = detail[firstKey];
+            if (Array.isArray(val)) {
+                const nonEmpty = val.filter(Boolean);
+                errorMessage = nonEmpty.length ? nonEmpty.join(', ') : `Error in field "${firstKey}"`;
+            } else if (typeof val === 'string' && val.trim()) {
+                errorMessage = val;
+            } else {
+                errorMessage = `Error in field "${firstKey}"`;
+            }
+        }
+    }
+
+    const errorPath = 'M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z';
     createdText.innerHTML = '';
     createdText.appendChild(createMessageSpan(errorMessage, errorPath));
     result.textContent = '';
-    // При ошибке тоже сбрасываем кнопку
     resetCopyButtonToCopyIcon();
 }
 
 function renderShortenedUrl(data) {
     if (!data || !data.shortened_code) return;
-    const urlPrefix = serverUrlElem ? serverUrlElem.textContent : '';
+    const urlPrefix = serverUrlElem ? window.location.protocol + '//' + serverUrlElem.textContent + '/' : '';
     result.textContent = urlPrefix + data.shortened_code;
 }
 
@@ -99,7 +120,7 @@ function copyToClipboard() {
     });
 }
 
-// Инициализация кнопки при загрузке
+
 document.addEventListener('DOMContentLoaded', function () {
     resetCopyButtonToCopyIcon();
 });
@@ -108,7 +129,7 @@ copyButton.addEventListener('click', copyToClipboard);
 result.addEventListener('click', copyToClipboard);
 
 document.body.addEventListener('htmx:beforeRequest', function (evt) {
-    // Проверяем, что это запрос на создание новой ссылки, а не другой
+    // Check if request is for creating a new URL
     const target = evt.detail.target;
     if (target && (target.id === 'result-container' || target.id === 'message-container')) {
         hideMessages();
@@ -136,11 +157,11 @@ document.body.addEventListener('htmx:afterRequest', (evt) => {
             createdText.innerHTML = '';
             createdText.appendChild(createMessageSpan('Your short link is ready!', successPath, 'w-4 h-4', 'text-sm text-green-400 font-medium flex items-center gap-2'));
             renderShortenedUrl(responseJson);
-            showMessagesWithLink(); // Здесь сбрасываем кнопку
+            showMessagesWithLink();
         } catch {
             hideMessages();
         }
     } else if ([409, 422, 500].includes(status)) {
-        showMessagesError(detail); // Здесь тоже сбрасываем кнопку
+        showMessagesError(detail);
     }
 });
