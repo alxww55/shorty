@@ -75,6 +75,7 @@ RABBITMQ_CONFIG__RABBITMQ_PORT = 5672
 # ============================================================================
 LOGGING_CONFIG__LOG_FILE_PATH = "./logs/logs.log"
 LOGGING_CONFIG__ROTATION = "1 day"                  # Log file rotation interval
+LOGGING_CONFIG__RETENTION = "1 day"                 # Log file retention interval
 LOGGING_CONFIG__FORMAT = "{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}"
 
 # ============================================================================
