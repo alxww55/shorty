@@ -48,9 +48,10 @@ class RabbitmqConfig(BaseSettings):
         return f"amqp://{self.rabbitmq_user}:{self.rabbitmq_password}@{self.rabbitmq_host}:{self.rabbitmq_port}"
 
 
-class LoggingCongig(BaseSettings):
+class LoggingConfig(BaseSettings):
     log_file_path: str
     rotation: str
+    retention: str
     format: str
 
 
@@ -66,7 +67,7 @@ class Settings(BaseSettings):
 
     db_config: DBConfig
     rabbitmq_config: RabbitmqConfig
-    logging_config: LoggingCongig
+    logging_config: LoggingConfig
 
     @property
     def database_url(self) -> PostgresDsn:
