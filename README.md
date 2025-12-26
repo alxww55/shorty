@@ -2,7 +2,7 @@
 
 A comprehensive self-hosted web application designed for simple and fast URL shortening
 
-![Shorty](https://img.shields.io/badge/Shorty-0.1.1-3776AB?style=flat&logoColor=white)
+![Shorty](https://img.shields.io/badge/Shorty-0.1.2-3776AB?style=flat&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.14-3776AB?style=flat&logo=python&logoColor=white)
 ![Docker Ready](https://img.shields.io/badge/Docker-Ready-3776AB?style=flat&logo=docker&logoColor=white)
 ![GitHub License](https://img.shields.io/github/license/alxww55/shorty)

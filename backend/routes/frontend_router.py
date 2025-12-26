@@ -18,6 +18,6 @@ async def get_main_page(request: Request):
         context={
             "app_name": settings.app_name,
             "version": settings.version,
-            "server_url": f"{request.url.scheme}://{request.url.hostname}/",
+            "server_url": request.url.hostname,
         },
     )

@@ -1,4 +1,7 @@
 # Changelog
+## [0.1.2] - 2025-12-26
+### Fixed
+- Host prefix was not prepended correctly
 
 ## [0.1.1] - 2025-12-25
 ### Added
