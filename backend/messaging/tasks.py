@@ -5,7 +5,7 @@ from ..services.url_service import URLService
 from .broker import broker
 
 
-@broker.task(schedule=[{"cron": "* 4 * * *"}])
+@broker.task(schedule=[{"cron": "* 4 */1 * *"}])
 async def delete_expired_links(
     service: URLService = TaskiqDepends(get_url_service),  # noqa: B008
 ) -> dict[str, str | Exception]:
